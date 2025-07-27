@@ -1,0 +1,70 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: azdevops-webhook-explorer-linux
+  labels:
+    name: azdevops-webhook-explorer-linux
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azdevops-webhook-explorer
+  namespace: azdevops-webhook-explorer-linux
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azdevops-webhook-explorer
+  template:
+    metadata:
+      labels:
+        app: azdevops-webhook-explorer
+    spec:
+      containers:
+        - name: azdevops-webhook-explorer
+          image: tobiasfenster/azdevops-webhook-explorer:latest
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: azdevops-webhook-explorer-ingress
+  namespace: azdevops-webhook-explorer-linux
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /webhook/$1
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: fps-alpaca.westeurope.cloudapp.azure.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: azdevops-webhook-explorer
+                port:
+                  number: 8080
+            path: /azdevops-webhook-explorer/(.*)
+            pathType: Prefix
+  tls:
+    - hosts:
+        - fps-alpaca.westeurope.cloudapp.azure.com
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: azdevops-webhook-explorer
+  namespace: azdevops-webhook-explorer-linux
+spec:
+  selector:
+    app: azdevops-webhook-explorer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
