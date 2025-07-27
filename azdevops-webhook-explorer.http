@@ -1,7 +1,9 @@
-@baseurl = http://localhost:8080
-@baseurl = https://cuddly-capybara-q74jxp677rj24q7j-8443.app.github.dev
+@baseurl = http://localhost:8080/webhook
+@baseurl = https://cuddly-capybara-q74jxp677rj24q7j-8443.app.github.dev/webhook
 
-POST {{baseurl}}/webhook
+@baseurl = https://fps-alpaca.westeurope.cloudapp.azure.com/azdevops-webhook-explorer/
+
+POST {{baseurl}}/inspect
 Content-Type: application/json
 
 {
