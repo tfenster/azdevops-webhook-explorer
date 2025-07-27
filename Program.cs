@@ -1,6 +1,9 @@
 using System.Text.Json;
 
-Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "http://0.0.0.0:8080;https://0.0.0.0:8443");
+if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
+{
+    Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "http://0.0.0.0:8080;https://0.0.0.0:8443");
+}
 
 var app = WebApplication.CreateBuilder().Build();
 
